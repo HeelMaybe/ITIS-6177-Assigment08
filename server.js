@@ -5,6 +5,8 @@ const swaggerJsdoc = require("swagger-jsdoc");
 const swaggerUi = require("swagger-ui-express");
 const cors = require("cors");
 const Joi = require("joi");
+const axios = require("axios");
+
 
 const options = {
   definition: {
@@ -46,6 +48,29 @@ pool
   .catch((err) => {
     console.log("not connected due to error: " + err);
   });
+
+app.get("/says", async function (req, res) {
+  let keyword = req.query.keyword;
+  if (keyword) {
+	console.log("keyword");
+	console.log(keyword);
+    axios
+      .put(
+        "https://us-east1-itis-6177-assignment-09.cloudfunctions.net/assignment09",
+        { keyword: keyword }
+      )
+      .then((response) => {
+	console.log("response");
+	console.log(response.data);
+        res.status(200).send(response.data);
+      })
+      .catch((err) => {
+        res.status(400).send(err);
+      });
+  } else {
+    res.status(400).send("no query keyword");
+  }
+});
 
 /**
  * @swagger
